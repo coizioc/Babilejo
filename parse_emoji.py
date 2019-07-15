@@ -1,3 +1,4 @@
+"""This file takes the data from https://unicode.org/Public/emoji/12.0/emoji-test.txt and converts it to a json."""
 import json
 
 emoji = {}
@@ -8,6 +9,7 @@ with open(EMOJI_FILE, 'r', encoding="utf-8") as f:
     lines = f.read().splitlines()
 
 for line in lines:
+    # Ignore lines or comments.
     if not line:
         continue
     if line[0] in ('#'):
@@ -19,6 +21,7 @@ for line in lines:
         continue
     emoji_names = " ".join(toks[3:]).replace(' ', '_').replace('-', '_')
     for emoji_name in emoji_names.split('/'):
+        # Skip emoji names that have skin color/gender markers.
         if ":" in emoji_names:
             continue
         emoji[emoji_name] = {"code": "-".join(code.lower().replace('-', ' ').split()), "emoji": toks[2]}
