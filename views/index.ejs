@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Babilejo</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { background: #282A36; font: 18px "Lucida Console", "Courier New", monospace; color: #F1F1F0; height: 100%; }
+            #main { display:block; position: relative; }
+            #messages-container { display: block; position: fixed; height: 85vh; overflow-y: scroll; }
+            #footer { position: fixed; bottom: 0; width: 100%; }
+            form { background: #282A36; padding: 3px; border-color: #F1F1F0; border-top-style: solid; border-top-width: 1px;}
+            form input { border-style: solid; border-width: 1px; padding: 10px; width: 85%; margin-right: .5%; }
+            select { background: #282A36; display:initial; }
+            #buttonContainer { position: relative; }
+            #chatButton { position: absolute; top: 50%; transform: translateY(15%); background: #57C7FF; border: none; margin-left: 2%; }
+            img.emoji { height: 1em; width: 1em; margin: 0 .05em 0 .1em; vertical-align: -0.1em; }
+            img.latex { vertical-align:middle; }
+            #messages { list-style-type: none; margin: 0; padding: 0; border: none; }
+            #messages li { background: #282A36; padding: 5px 10px; word-break: break-all; }
+            #time { color: #57C7FF; text-align: center; }
+            .collection .collection-item { border: none; border-bottom: 0px; }
+        </style>
+        <script src="../../socket.io/socket.io.js"></script>
+        <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    </head>
+    <body>
+        <div id="createUserModal" class="modal">
+            <form action="/" method="POST" id="accountCreationForm">
+                <div class="modal-content">
+                    <h4>Welcome to Babilejo!</h4>
+                    <p>Please fill in the following information to get started.</p>
+                    <div class="col s12">
+                        <input id="username" class="validate" autocomplete="off" required/>
+                        <label for="username">Username</label>
+                    </div>
+                    <div class="col s12">
+                        <select id="userColor" name="userColor">
+                            <option value="F1F1F0" selected>White</option>
+                            <option style="color:#FF5B56" value="FF5B56">Red</option>
+                            <option style="color:#FF6AC1" value="FF6AC1">Pink</option>
+                            <option style="color:#F3F99D" value="F3F99D">Yellow</option>
+                            <option style="color:#5AF78E" value="5AF78E">Green</option>
+                            <option style="color:#57C7FF" value="57C7FF">Blue</option>
+                            <option style="color:#9AEDFE" value="9AEDFE">Cyan</option>
+                        </select>
+                        <label for="userColor">User Color</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="createAccountButton" class="waves-effect waves-green btn-flat">
+                        Sign up
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col s12" id="main">
+                <div class="row">
+                    <div class="col s12" id="messages-container">
+                        <ul class="collection" id="messages"></ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12" id="footer">
+                        <div id="notify"></div>
+                        <form action="/" method="POST" id="chatForm">
+                            <div class="input-field col s9">
+                                <input id="txt" autocomplete="off" autofocus="on" placeholder="type your message here..." />
+                            </div>
+                            <div id="buttonContainer" class="col s3">
+                                <button id="chatButton" class="btn-floating btn-large waves-effect waves-light">
+                                    <i class="small material-icons">chat</i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            var canPublish = true;
+            var throttleTime = 200;
+            var notifyTime = 2000;
+            
+            var socket = io.connect('http://localhost:8000');
+
+            $('#notify').hide();
+
+
+
+            // submit text message without reload/refresh the page
+            $('#chatForm').submit(function(e){
+                e.preventDefault(); // prevents page reloading
+                var msg = $('#txt').val();
+                if(msg.startsWith('/')) {
+                    socket.emit('command_sent', msg);
+                }
+                else {
+                    socket.emit('chat_message', msg);
+                }
+                $('#txt').val('');
+                return false;
+            });
+
+            $('#accountCreationForm').submit(function(e){
+                e.preventDefault(); // prevents page reloading
+                var options = {}
+                options.username = $('#username').val();
+                options.color = $('#userColor').val();
+                socket.emit('create_user', options);
+                $('#txt').val('');
+                $('#createUserModal').modal('close');
+                return false;
+            });
+            
+            /*
+            $('#accountCreationForm').validate({
+                rules: {
+                    username: {
+                        required: true,
+                        minlength: 1
+                    }
+                },
+                messages: {
+                    username: {
+                        required: "Enter a username",
+                        minlength: "Enter at least 5 characters"
+                    }
+                },
+                submitHandler: function(form) {
+                    $('#createAccountButton').prop('disabled', false);
+                }
+            });
+            */
+
+            $("#chatForm").keypress(function (e) {
+                if(e.which == 13 && !e.shiftKey) {        
+                    $(this).closest("form").submit();
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            $('#chatForm').on('keyup', function(e) {
+                e.preventDefault();
+                // Check if the enter key has been pressed. If so, don't send
+                // notification.
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if(keycode == '13'){
+                    return false;
+                }
+                if(canPublish) {
+                    socket.emit('user_typing');
+                    canPublish = false;
+                    setTimeout(function() {
+                        canPublish = true;
+                    }, throttleTime);
+                    socket.emit('user_not_typing');
+                }
+            });
+
+            // append the chat text message
+            socket.on('chat_message', function(msg) {
+                $('#messages').append($('<li class="collection-item">').html(msg));
+                $("#messages-container").scrollTop($("#messages-container")[0].scrollHeight);
+            });
+
+            // append text if someone is online
+            socket.on('is_online', function(username) {
+                $('#messages').append($('<li>').html(username));
+            });
+
+            // show notification text
+            socket.on('send_notify', function(msg) {
+                $('#notify').html(msg).fadeIn('slow');
+                setTimeout(function() {
+                    $('#notify').fadeOut('slow');
+                }, notifyTime);
+            });
+
+            $(document).ready(function() {
+                $('.modal').modal();
+                $('#createUserModal').modal({
+                        dismissible: false,
+                        keyboard: false
+                });
+                $('#createUserModal').modal('open');
+            });
+        </script>
+    </body>
+</html>
