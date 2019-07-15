@@ -13,6 +13,7 @@ var emoticons = JSON.parse(fs.readFileSync('emoticons.json', 'utf-8'));
 var emoji = JSON.parse(fs.readFileSync('emoji.json', 'utf8'));
 var customEmoji = JSON.parse(fs.readFileSync('custom-emoji.json', 'utf-8'));
 
+/* Replaces emoticons and :emoji: in a message with emoji image tags. */
 function replaceEmoji(msg) {
     // Replace emoticons with :emoji:
     Object.keys(emoticons).forEach(function(k) {
@@ -43,6 +44,7 @@ function replaceEmoji(msg) {
     return msg;
 }
 
+/* Replaces all instances of $$latex$$ in a message with latex image tags. */
 function replaceLatex(msg) {
     var regex = /\$\$(.+)\$\$/g;
     var found = msg.match(regex);
@@ -56,10 +58,12 @@ function replaceLatex(msg) {
     return msg;
 }
 
-function argsparser(args) {
+/* Finds and runs a command given its arguments. */
+function cmdParser(args) {
     return 'command ' + args[0].substring(1) + ' sent.';
 }
 
+/* Formats a message into html. */
 function formatMessage(socket, content) {
     var time = getTime();
     var message = '<div class="col s9 m10 l11"><b style="color: #' + socket.color + ';">' + socket.username + '</b>: '
@@ -67,6 +71,7 @@ function formatMessage(socket, content) {
     return message;
 }
 
+/* Generates the "X is typing..." message. */
 function generateTypingMessage() {
     var msg = "<i>";
     var numPeople = 0;
@@ -89,6 +94,7 @@ function generateTypingMessage() {
     return msg;
 }
 
+/* Creates a string showing the given time using the format hh:mm. */
 function getTime() {
     var today = new Date();
     var hh = today.getHours();
@@ -103,6 +109,7 @@ function getTime() {
     return time;
 }
 
+/* Socket behavior. */
 io.sockets.on('connection', function(socket) {
     socket.on('create_user', function(options) {
         socket.username = options.username;
@@ -115,6 +122,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on('chat_message', function(message) {
+        // If message is not empty
         if(message.trim() !== '') {
             message = replaceEmoji(message);
             message = replaceLatex(message);
@@ -124,8 +132,9 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('command_sent', function(message) {
         var args = message.split(" ");
+        // Check for empty command.
         if(args[0] !== '/') {
-            var ret = argsparser(args);
+            var ret = cmdParser(args);
             io.emit('chat_message', formatMessage(socket, ret));
         }
     });
