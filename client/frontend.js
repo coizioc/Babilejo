@@ -61,7 +61,7 @@ socket.on('chat_message', function(msg) {
 socket.on('send_embed', function(embed) {
     $('#messages').append($('<li class="collection-item">').html(embed));
     $("#messages-container").scrollTop($("#messages-container")[0].scrollHeight);
-})
+});
 
 // Append text if someone is online.
 socket.on('is_online', function(username) {

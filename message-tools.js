@@ -70,6 +70,19 @@ exports.replaceLatex = function(msg) {
     return msg;
 }
 
+/* Parses urls from a message and returns them as an array. */
+exports.replaceUrls = function(msg) {
+    var regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
+    var found = msg.match(regex);
+    if(found !== null) {
+        found.forEach(function(e) {
+            var aTag = '<a href="' + e + '">' + e + '</a>';
+            msg = msg.replace(e, aTag);
+        });
+    }
+    return msg;
+}
+
 /* Formats a message into html. */
 exports.formatMessage = function(socket, content) {
     var time = getTime();

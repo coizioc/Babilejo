@@ -52,6 +52,7 @@ io.sockets.on('connection', function(socket) {
                     io.emit('send_embed', embed);
                 })();
             })
+            message = msgtools.replaceUrls(message);
             
             io.emit('chat_message', msgtools.formatMessage(socket, message));
         }
