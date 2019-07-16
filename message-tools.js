@@ -111,6 +111,23 @@ exports.generateTypingMessage = function(isTyping) {
     return msg;
 }
 
+exports.createEmbed = function(url, it) {
+    var embed = '<div class="col s12"><div class="card horizontal"><div class="card-image"><img src="' + it.image +
+        '"></div><div class="card-content"><p><b><a href="' + url + '">' + it.title + '</a></b>: ' + it.description + '</p></div></div></div>';
+    return embed;
+}
+
+/* Parses urls from a message and returns them as an array. */
+exports.parseUrls = function(msg) {
+    var regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
+    var found = msg.match(regex);
+    if(found !== null) {
+        return found;
+    } else {
+        return [];
+    }
+}
+
 /* Formats the socket's username to username#discriminator. */
 function formatUsername(socket) {
     return socket.username + "#" + socket.id.padStart(4, '0');

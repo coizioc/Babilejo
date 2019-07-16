@@ -96,3 +96,35 @@ img.latex {
     border: none;
     border-bottom: 0px;
 }
+
+.card {
+    background: #282A36;
+    margin-right: 0.5em;
+    padding: 0.25em;
+    max-height: 10em;
+    word-break: normal;
+    font-size: 12px;
+}
+
+.card.horizontal {
+    background: #57C7FF;
+    width: 70%;
+    margin-left: 10%;
+}
+
+.card .card-image, .card.horizontal .card-image {
+    width: 20%;
+    margin: .5em;
+}
+
+.card .card-image img {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    max-height: 100%;
+}
+
+.card .card-content {
+    background: #282A36;
+    padding: 1em;
+    margin: 0.5em;
+    width: 80%;
+}

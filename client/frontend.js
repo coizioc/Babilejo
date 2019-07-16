@@ -58,6 +58,11 @@ socket.on('chat_message', function(msg) {
     $("#messages-container").scrollTop($("#messages-container")[0].scrollHeight);
 });
 
+socket.on('send_embed', function(embed) {
+    $('#messages').append($('<li class="collection-item">').html(embed));
+    $("#messages-container").scrollTop($("#messages-container")[0].scrollHeight);
+})
+
 // Append text if someone is online.
 socket.on('is_online', function(username) {
     $('#messages').append($('<li>').html(username));
@@ -74,8 +79,8 @@ socket.on('send_notify', function(msg) {
 $(document).ready(function() {
     $('.modal').modal();
     $('#createUserModal').modal({
-            dismissible: false,
-            keyboard: false
+        dismissible: false,
+        keyboard: false
     });
     $('#createUserModal').modal('open');
 });

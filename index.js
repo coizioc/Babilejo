@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const grabity = require("grabity");
 
 const msgtools = require('./message-tools');
 
@@ -42,6 +43,16 @@ io.sockets.on('connection', function(socket) {
         if(message.trim() !== '') {
             message = msgtools.replaceEmoji(message);
             message = msgtools.replaceLatex(message);
+            var urls = msgtools.parseUrls(message);
+            urls.forEach(function(e) {
+                (async () => {
+                    let it = await grabity.grabIt(e);
+    
+                    let embed = msgtools.createEmbed(e, it);
+                    io.emit('send_embed', embed);
+                })();
+            })
+            
             io.emit('chat_message', msgtools.formatMessage(socket, message));
         }
     });
