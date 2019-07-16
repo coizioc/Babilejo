@@ -88,6 +88,29 @@ exports.formatJoinMessage = function(socket, disconnect) {
     return msg;
 }
 
+/* Generates the "X is typing..." message. */
+exports.generateTypingMessage = function(isTyping) {
+    var msg = "<i>";
+    var numPeople = 0;
+    isTyping.forEach(function(v, k) {
+        if(v) {
+            msg += formatUsername(k) + ', ';
+            numPeople++;
+        }
+    });
+    msg = msg.substring(0, msg.length - 2);
+    if(numPeople > 3) {
+        msg = '<i>Many people are typing...</i>';
+    }
+    else if(numPeople > 1) {
+        msg += ' are typing...</i>';
+    }
+    else {
+        msg += ' is typing...</i>'
+    }
+    return msg;
+}
+
 /* Formats the socket's username to username#discriminator. */
 function formatUsername(socket) {
     return socket.username + "#" + socket.id.padStart(4, '0');

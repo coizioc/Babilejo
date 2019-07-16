@@ -13,35 +13,12 @@ app.get('/', function(req, res) {
 
 var numUsers = 0;
 
-// key: userid, value: true/false for whether that user is typing.
+// key: socket, value: true/false for whether that user is typing.
 var isTyping = new Map();
 
 /* Finds and runs a command given its arguments. */
 function cmdParser(args) {
     return 'command ' + args[0].substring(1) + ' sent.';
-}
-
-/* Generates the "X is typing..." message. */
-function generateTypingMessage() {
-    var msg = "<i>";
-    var numPeople = 0;
-    isTyping.forEach(function(v, k) {
-        if(v) {
-            msg += k + ', ';
-            numPeople++;
-        }
-    });
-    msg = msg.substring(0, msg.length - 2);
-    if(numPeople > 5) {
-        msg = '<i>Many people are typing...</i>';
-    }
-    else if(numPeople > 1) {
-        msg += ' are typing...</i>';
-    }
-    else {
-        msg += ' is typing...</i>'
-    }
-    return msg;
 }
 
 /* Socket behavior. */
@@ -79,13 +56,13 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on('user_typing', function() {
-        isTyping.set(socket.id, true);
-        var msg = generateTypingMessage();
+        isTyping.set(socket, true);
+        var msg = msgtools.generateTypingMessage(isTyping);
         io.emit('send_notify', msg);
     });
 
     socket.on('user_not_typing', function() {
-        isTyping.set(socket.id, false);
+        isTyping.set(socket, false);
     });
 });
 
