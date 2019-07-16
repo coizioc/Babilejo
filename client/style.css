@@ -92,6 +92,15 @@ img.latex {
     text-align: center;
 }
 
+.spoiler {
+    color: #F1F1F0; 
+    background-color:#F1F1F0;
+}
+
+.spoiler:hover {
+    color: #282A36;
+}
+
 .collection .collection-item {
     border: none;
     border-bottom: 0px;

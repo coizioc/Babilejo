@@ -43,6 +43,7 @@ io.sockets.on('connection', function(socket) {
         if(message.trim() !== '') {
             message = msgtools.replaceEmoji(message);
             message = msgtools.replaceLatex(message);
+
             var urls = msgtools.parseUrls(message);
             urls.forEach(function(e) {
                 (async () => {
@@ -52,7 +53,9 @@ io.sockets.on('connection', function(socket) {
                     io.emit('send_embed', embed);
                 })();
             })
+
             message = msgtools.replaceUrls(message);
+            message = msgtools.replaceMarkdown(message);
             
             io.emit('chat_message', msgtools.formatMessage(socket, message));
         }
