@@ -52,15 +52,21 @@ select {
 
 #buttonContainer {
     position: relative;
+    display: inline-block;
 }
 
 #chatButton {
-    position: absolute;
-    top: 50%;
-    transform: translateY(15%);
     background: #57C7FF;
     border: none;
     margin-left: 2%;
+    margin-top: 2%;
+}
+
+#settingsButton {
+    background: #5AF78E;
+    border: none;
+    margin-left: 2%;
+    margin-top: 2%;
 }
 
 img.emoji {
@@ -136,4 +142,10 @@ img.latex {
     padding: 1em;
     margin: 0.5em;
     width: 80%;
+}
+
+.modal {
+    background: #282A36;
+    width: 70%;
+    padding: 2em;
 }

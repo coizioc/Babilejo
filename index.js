@@ -24,12 +24,19 @@ function cmdParser(args) {
 
 /* Socket behavior. */
 io.sockets.on('connection', function(socket) {
-    socket.on('create_user', function(options) {
+    socket.on('user_create', function(options) {
         numUsers++;
         socket.username = options.username;
         socket.id = numUsers.toString();
         socket.color = options.color;
         io.emit('is_online', msgtools.formatJoinMessage(socket));
+    });
+
+    socket.on('user_edit', function(options) {
+        for(let [k, v] of Object.entries(options)) {
+            console.log('setting ' + k + ' to ' + v);
+            socket[k] = v;
+        }
     });
 
     socket.on('disconnect', function(username) {
@@ -41,9 +48,6 @@ io.sockets.on('connection', function(socket) {
     socket.on('chat_message', function(message) {
         // If message is not empty
         if(message.trim() !== '') {
-            message = msgtools.replaceEmoji(message);
-            message = msgtools.replaceLatex(message);
-
             var urls = msgtools.parseUrls(message);
             urls.forEach(function(e) {
                 (async () => {
@@ -52,10 +56,11 @@ io.sockets.on('connection', function(socket) {
                     let embed = msgtools.createEmbed(e, it);
                     io.emit('send_embed', embed);
                 })();
-            })
-
+            });
             message = msgtools.replaceUrls(message);
             message = msgtools.replaceMarkdown(message);
+            message = msgtools.replaceEmoji(message);
+            message = msgtools.replaceLatex(message);
             
             io.emit('chat_message', msgtools.formatMessage(socket, message));
         }
@@ -78,6 +83,13 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('user_not_typing', function() {
         isTyping.set(socket, false);
+    });
+
+    socket.on('request_info', function(options) {
+        for(let [k, v] of Object.entries(options)) {
+            options[k] = socket[k];
+        }
+        socket.emit('receive_info', options);
     });
 });
 

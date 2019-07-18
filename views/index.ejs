@@ -23,8 +23,8 @@
                         <label for="username">Username</label>
                     </div>
                     <div class="col s12">
-                        <select id="userColor" name="userColor">
-                            <option value="F1F1F0" selected>White</option>
+                        <select id="userColor" class="userColor" name="userColor">
+                            <option style="color:#F1F1F0" value="F1F1F0" selected>White</option>
                             <option style="color:#FF5B56" value="FF5B56">Red</option>
                             <option style="color:#FF6AC1" value="FF6AC1">Pink</option>
                             <option style="color:#F3F99D" value="F3F99D">Yellow</option>
@@ -38,6 +38,34 @@
                 <div class="modal-footer">
                     <button id="createAccountButton" class="waves-effect waves-green btn-flat">
                         Sign up
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div id="settingsModal" class="modal">
+            <form action="/" method="POST" id="accountSettingsForm">
+                <div class="modal-content">
+                    <h4>User Settings:</h4>
+                    <div class="col s12">
+                        <input id="usernameSetting" class="validate" autocomplete="off" required/>
+                        <label for="usernameSetting">Username</label>
+                    </div>
+                    <div class="col s12">
+                        <select id="userColorSetting" class="userColorSetting">
+                            <option style="color:#F1F1F0" value="F1F1F0" selected="selected">White</option>
+                            <option style="color:#FF5B56" value="FF5B56">Red</option>
+                            <option style="color:#FF6AC1" value="FF6AC1">Pink</option>
+                            <option style="color:#F3F99D" value="F3F99D">Yellow</option>
+                            <option style="color:#5AF78E" value="5AF78E">Green</option>
+                            <option style="color:#57C7FF" value="57C7FF">Blue</option>
+                            <option style="color:#9AEDFE" value="9AEDFE">Cyan</option>
+                        </select>
+                        <label for="userColor">User Color</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveSettingsButton" class="waves-effect waves-green btn-flat">
+                        Save settings
                     </button>
                 </div>
             </form>
@@ -59,6 +87,9 @@
                             <div id="buttonContainer" class="col s3">
                                 <button id="chatButton" class="btn-floating btn-large waves-effect waves-light">
                                     <i class="small material-icons">chat</i>
+                                </button>
+                                <button type="button" id="settingsButton" class="btn-floating btn-large waves-effect waves-light">
+                                    <i class="small material-icons">settings</i>
                                 </button>
                             </div>
                         </form>
