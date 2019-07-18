@@ -161,6 +161,13 @@ exports.createMediaEmbed = function(url) {
     return mediaEmbed;
 }
 
+exports.createVideoEmbed = function(url) {
+    var videoID = url.match(/\?v=(.+)/)[0].substring(3);
+    var videoEmbed = '<div class="col s12"><div class="card video"><div class="card-image"><iframe width="560" height="340" src="https://www.youtube.com/embed/' + videoID +
+        '" frameborder="0" allowfullscreen></iframe></div></div></div>';
+    return videoEmbed;
+}
+
 /* Parses urls from a message and returns them as an array. */
 exports.parseUrls = function(msg) {
     var regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;

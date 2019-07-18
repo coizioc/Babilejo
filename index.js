@@ -60,21 +60,27 @@ io.sockets.on('connection', function(socket) {
 
             var urls = msgtools.parseUrls(unformattedMsg);
             urls.forEach(function(url) {
-                (async () => {
-                    try {
-                        let it = await grabity.grabIt(url);
-                        let embed = msgtools.createEmbed(url, it);
-                        io.emit('send_embed', embed);
-                    } catch(e) {
-                        if(e instanceof RangeError) {
-                            let embed = msgtools.createMediaEmbed(url);
+                if(url.includes('youtube.com/watch?v=')) {
+                    let embed = msgtools.createVideoEmbed(url);
+                    io.emit('send_embed', embed);
+                }
+                else {
+                    (async () => {
+                        try {
+                            let it = await grabity.grabIt(url);
+                            let embed = msgtools.createEmbed(url, it);
                             io.emit('send_embed', embed);
+                        } catch(e) {
+                            if(e instanceof RangeError) {
+                                let embed = msgtools.createMediaEmbed(url);
+                                io.emit('send_embed', embed);
+                            }
+                            else {
+                                console.log(e);
+                            }
                         }
-                        else {
-                            console.log(e);
-                        }
-                    }
-                })();
+                    })();
+                }
             });
         }
     });
