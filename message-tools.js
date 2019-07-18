@@ -70,48 +70,28 @@ exports.replaceLatex = function(msg) {
     return msg;
 }
 
+/* Adds Markdown-style formatting to a message. */
 exports.replaceMarkdown = function(msg) {
-    var boldRegex = /\*\*(.+)\*\*/g;
-    var italicsRegex = /\*(.+)\*/g;
-    var underscoreRegex = /__(.+)__/g;
-    var strikethroughRegex = /~~(.+)~~/g;
-    var spoilerRegex = /\|\|(.+)\|\|/g;
+    var bold = {regex: /\*\*(.+)\*\*/g, remove: /\*\*/g, tagBegin: '<b>', tagFinal: '</b>'};
+    var italics = {regex: /\*(.+)\*/g, remove: /\*/g, tagBegin: '<i>', tagFinal: '</i>'};
+    var underscore = {regex: /\*(.+)\*/g, remove: /\_\_/g, tagBegin: '<u>', tagFinal: '</u>'};
+    var strikethrough = {regex: /\*(.+)\*/g, remove: /~~/g, tagBegin: '<s>', tagFinal: '</s>'};
+    var spoiler = {regex: /\*(.+)\*/g, remove: /\|\|/g, tagBegin: '<span class="spoiler">', tagFinal: '</span>'};
+    var greentext = {regex: /\*(.+)\*/g, remove: null, tagBegin: '<span style="color: #789922">', tagFinal: '</span>'};
+    var formats = [bold, italics, underscore, strikethrough, spoiler, greentext];
 
-    var found = msg.match(boldRegex);
-    if(found !== null) {
-        found.forEach(function(e) {
-            var bTag = '<b>' + e.replace(/\*\*/g, '') + '</b>';
-            msg = msg.replace(e, bTag);
-        });
-    }
-    var found = msg.match(italicsRegex);
-    if(found !== null) {
-        found.forEach(function(e) {
-            var iTag = '<i>' + e.replace(/\*/g, '') + '</i>';
-            msg = msg.replace(e, iTag);
-        });
-    }
-    var found = msg.match(underscoreRegex);
-    if(found !== null) {
-        found.forEach(function(e) {
-            var uTag = '<u>' + e.replace(/\_\_/g, '') + '</u>';
-            msg = msg.replace(e, uTag);
-        });
-    }
-    var found = msg.match(strikethroughRegex);
-    if(found !== null) {
-        found.forEach(function(e) {
-            var sTag = '<s>' + e.replace(/~~/g, '')  + '</s>';
-            msg = msg.replace(e, sTag);
-        });
-    }
-    var found = msg.match(spoilerRegex);
-    if(found !== null) {
-        found.forEach(function(e) {
-            var spoilerTag = '<span class="spoiler">' + e.replace(/\|\|/g, '') + '</span>';
-            msg = msg.replace(e, spoilerTag);
-        });
-    } 
+    formats.forEach(function(format) {
+        var found = msg.match(format.regex);
+        if(found !== null) {
+            found.forEach(function(match) {
+                if(format.remove !== null) {
+                    match = match.replace(format.remove, '');
+                }
+                var tag = format.tagBegin + match + format.tagFinal;
+                msg = msg.replace(match, tag);
+            });
+        }
+    });
     return msg;
 }
 
