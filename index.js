@@ -4,6 +4,7 @@ const path = require('path');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const grabity = require("grabity");
+const isImageUrl = require('is-image-url');
 
 const msgtools = require('./message-tools');
 
@@ -48,21 +49,33 @@ io.sockets.on('connection', function(socket) {
     socket.on('chat_message', function(message) {
         // If message is not empty
         if(message.trim() !== '') {
-            var urls = msgtools.parseUrls(message);
-            urls.forEach(function(e) {
-                (async () => {
-                    let it = await grabity.grabIt(e);
-    
-                    let embed = msgtools.createEmbed(e, it);
-                    io.emit('send_embed', embed);
-                })();
-            });
+            var unformattedMsg = message;
+
             message = msgtools.replaceUrls(message);
             message = msgtools.replaceMarkdown(message);
             message = msgtools.replaceEmoji(message);
             message = msgtools.replaceLatex(message);
             
             io.emit('chat_message', msgtools.formatMessage(socket, message));
+
+            var urls = msgtools.parseUrls(unformattedMsg);
+            urls.forEach(function(url) {
+                (async () => {
+                    try {
+                        let it = await grabity.grabIt(url);
+                        let embed = msgtools.createEmbed(url, it);
+                        io.emit('send_embed', embed);
+                    } catch(e) {
+                        if(e instanceof RangeError) {
+                            let embed = msgtools.createMediaEmbed(url);
+                            io.emit('send_embed', embed);
+                        }
+                        else {
+                            console.log(e);
+                        }
+                    }
+                })();
+            });
         }
     });
 

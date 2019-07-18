@@ -113,10 +113,11 @@ img.latex {
 }
 
 .card {
-    background: #282A36;
+    background: #57C7FF;
     margin-right: 0.5em;
     padding: 0.25em;
-    max-height: 10em;
+    width: 30%;
+    margin-left: 10%;
     word-break: normal;
     font-size: 12px;
 }
@@ -124,10 +125,16 @@ img.latex {
 .card.horizontal {
     background: #57C7FF;
     width: 70%;
+    max-height: 10em;
     margin-left: 10%;
 }
 
-.card .card-image, .card.horizontal .card-image {
+.card .card-image {
+    width: 100%;
+    padding: .5em;
+}
+
+.card.horizontal .card-image {
     width: 20%;
     margin: .5em;
 }

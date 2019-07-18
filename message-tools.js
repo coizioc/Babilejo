@@ -155,6 +155,12 @@ exports.createEmbed = function(url, it) {
     return embed;
 }
 
+exports.createMediaEmbed = function(url) {
+    var mediaEmbed = '<div class="col s12"><div class="card"><div class="card-image"><img src="' + url +
+        '"></div></div></div>';
+    return mediaEmbed;
+}
+
 /* Parses urls from a message and returns them as an array. */
 exports.parseUrls = function(msg) {
     var regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
