@@ -5,12 +5,14 @@
         <title>Babilejo</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
         <link rel="stylesheet" href="/style.css"></link>
 
         <script src="../../socket.io/socket.io.js"></script>
         <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
     </head>
     <body>
         <div id="createUserModal" class="modal">
@@ -18,21 +20,15 @@
                 <div class="modal-content">
                     <h4>Welcome to Babilejo!</h4>
                     <p>Please fill in the following information to get started.</p>
-                    <div class="col s12">
-                        <input id="username" class="validate" autocomplete="off" required/>
-                        <label for="username">Username</label>
-                    </div>
-                    <div class="col s12">
-                        <select id="userColor" class="userColor" name="userColor">
-                            <option style="color:#F1F1F0" value="F1F1F0" selected>White</option>
-                            <option style="color:#FF5B56" value="FF5B56">Red</option>
-                            <option style="color:#FF6AC1" value="FF6AC1">Pink</option>
-                            <option style="color:#F3F99D" value="F3F99D">Yellow</option>
-                            <option style="color:#5AF78E" value="5AF78E">Green</option>
-                            <option style="color:#57C7FF" value="57C7FF">Blue</option>
-                            <option style="color:#9AEDFE" value="9AEDFE">Cyan</option>
-                        </select>
-                        <label for="userColor">User Color</label>
+                    <div class="row">
+                        <div class="col s11">
+                            <input id="username" class="validate" style="color: #F1F1F0;" autocomplete="off" required/>
+                            <label for="username">Username</label>
+                        </div>
+                        <div class="col s1">
+                            <div class="color-picker"></div>
+                            <label for="userColor">Color</label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -46,21 +42,15 @@
             <form action="/" method="POST" id="accountSettingsForm">
                 <div class="modal-content">
                     <h4>User Settings:</h4>
-                    <div class="col s12">
-                        <input id="usernameSetting" class="validate" autocomplete="off" required/>
-                        <label for="usernameSetting">Username</label>
-                    </div>
-                    <div class="col s12">
-                        <select id="userColorSetting" class="userColorSetting">
-                            <option style="color:#F1F1F0" value="F1F1F0" selected="selected">White</option>
-                            <option style="color:#FF5B56" value="FF5B56">Red</option>
-                            <option style="color:#FF6AC1" value="FF6AC1">Pink</option>
-                            <option style="color:#F3F99D" value="F3F99D">Yellow</option>
-                            <option style="color:#5AF78E" value="5AF78E">Green</option>
-                            <option style="color:#57C7FF" value="57C7FF">Blue</option>
-                            <option style="color:#9AEDFE" value="9AEDFE">Cyan</option>
-                        </select>
-                        <label for="userColor">User Color</label>
+                    <div class="row">
+                        <div class="col s11">
+                            <input id="usernameSetting" class="validate" style="color: #F1F1F0;" autocomplete="off" required/>
+                            <label for="usernameSetting">Username</label>
+                        </div>
+                        <div class="col s1">
+                            <div class="color-picker"></div>
+                            <label for="userColor">Color</label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

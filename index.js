@@ -3,9 +3,9 @@ const app = express();
 const path = require('path');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const grabity = require("grabity");
-const isImageUrl = require('is-image-url');
+const grabity = require('grabity');
 
+const cmds = require('./cmds');
 const msgtools = require('./message-tools');
 
 app.use(express.static(path.join(__dirname, 'client')));
@@ -35,7 +35,6 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('user_edit', function(options) {
         for(let [k, v] of Object.entries(options)) {
-            console.log('setting ' + k + ' to ' + v);
             socket[k] = v;
         }
     });

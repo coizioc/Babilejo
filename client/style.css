@@ -177,3 +177,16 @@ img.latex {
     width: 70%;
     padding: 2em;
 }
+
+.pcr-app[data-theme="nano"] {
+    background: #282A36;
+    font-family: inherit;
+}
+
+.pcr-app[data-theme="nano"] .pcr-interaction .pcr-type.active {
+    background: #57C7FF;
+}
+
+.pcr-app[data-theme="nano"] .pcr-interaction .pcr-save {
+    background: #5AF78E;
+}

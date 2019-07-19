@@ -4,17 +4,51 @@ var notifyTime = 2000;
 
 var socket = io.connect('http://localhost:8000');
 
+var pickrOptions = {
+    el: '.color-picker',
+    theme: 'nano',
+    swatches: [
+        '#F1F1F0',
+        '#FF5B56',
+        '#FF6AC1',
+        '#F3F99D',
+        '#5AF78E',
+        '#57C7FF',
+        '#9AEDFE'
+    ],
+    default: 'F1F1F0',
+    lockOpacity: true,
+    components: {
+        preview: true,
+        opacity: false,
+        hue: true,
+        interaction: {
+            hex: true,
+            input: true,
+            save: true
+        }
+    }
+};
+
+var pickr = Pickr.create(pickrOptions);
+pickr.on('save', function(color) {
+    $('#username').css('color', '#' + color.toHEXA().join(''));
+});
+
+var settingsPickr = Pickr.create(pickrOptions);
+settingsPickr.on('save', function(color) {
+    $('#usernameSetting').css('color', '#' + color.toHEXA().join(''));
+});
+
 $('#notify').hide();
 
 // Submit text message.
 $('#chatForm').submit(function(e){
     e.preventDefault();
     var msg = convertHtmlTags($('#txt').val());
+    socket.emit('chat_message', msg);
     if(msg.startsWith('/')) {
         socket.emit('command_sent', msg);
-    }
-    else {
-        socket.emit('chat_message', msg);
     }
     $('#txt').val('');
     return false;
@@ -25,7 +59,7 @@ $('#accountCreationForm').submit(function(e){
     e.preventDefault();
     var options = {}
     options.username = convertHtmlTags($('#username').val());
-    options.color = $('#userColor').val();
+    options.color = RGBtoHEX($('#username').css('color'));
     socket.emit('user_create', options);
     $('#txt').val('');
     $('#createUserModal').modal('close');
@@ -37,7 +71,7 @@ $('#accountSettingsForm').submit(function(e){
     e.preventDefault();
     var options = {}
     options.username = convertHtmlTags($('#usernameSetting').val());
-    options.color = $('#userColorSetting').val();
+    options.color = RGBtoHEX($('#usernameSetting').css('color'));
     socket.emit('user_edit', options);
     $('#settingsModal').modal('close');
     return false;
@@ -47,25 +81,11 @@ $('#accountSettingsForm').submit(function(e){
 $('#settingsButton').click(function() {
     socket.emit('request_info', {username: null, color: null});
     socket.on('receive_info', function(options) {
+        settingsPickr.options.default = options.color;
         $('#usernameSetting').val(options.username);
         $('#usernameSetting').css('color', options.color);
-        $('select.userColorSetting').css('color', options.color);
         $('#settingsModal').modal('open');
     });
-});
-
-// Change color of text to match currently selected option.
-$('#userColor').change(function() {
-    var currentColor = "#" + $('#userColor').val();
-    $('select.userColor').css('color', currentColor);
-    $('#username').css('color', currentColor);
-});
-
-// Change color of text to match currently selected option.
-$('#userColorSetting').change(function() {
-    var currentColor = "#" + $('#userColorSetting').val();
-    $('select.userColorSetting').css('color', currentColor);
-    $('#usernameSetting').css('color', currentColor);
 });
 
 // Typing indicator behavior.
@@ -125,4 +145,16 @@ $(document).ready(function() {
 // Prevent CSS attacks.
 function convertHtmlTags(str) {
     return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function RGBtoHEX(rgb) {
+    // remove css formatted rgb(r, g, b), then split into an array
+    // [r, g, b].
+    var a = rgb.split("(")[1].split(")")[0].split(',');
+    // Convert each element in the array to a hex string.
+    var b = a.map(function(x){
+        x = parseInt(x).toString(16);
+        return (x.length == 1) ? "0" + x : x;
+    });
+    return b.join("");
 }
