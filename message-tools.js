@@ -127,15 +127,15 @@ exports.formatJoinMessage = function(socket, disconnect) {
 }
 
 /* Generates the "X is typing..." message. */
-exports.generateTypingMessage = function(isTyping) {
+exports.generateTypingMessage = function(clients) {
     var msg = "<i>";
     var numPeople = 0;
-    isTyping.forEach(function(v, k) {
-        if(v) {
-            msg += formatUsername(k) + ', ';
+    for(let [k, v] of Object.entries(clients)) {
+        if(v.isTyping) {
+            msg += formatUsername(v.socket) + ', ';
             numPeople++;
         }
-    });
+    }
     msg = msg.substring(0, msg.length - 2);
     if(numPeople > 3) {
         msg = '<i>Many people are typing...</i>';

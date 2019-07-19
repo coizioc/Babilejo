@@ -15,12 +15,14 @@ app.get('/', function(req, res) {
 
 var numUsers = 0;
 
-// key: socket, value: true/false for whether that user is typing.
-var isTyping = new Map();
+var clients = {};
 
 /* Finds and runs a command given its arguments. */
 function cmdParser(args) {
-    return 'command ' + args[0].substring(1) + ' sent.';
+    var cmdName = args[0].substring(1);
+    if(cmds[cmdName] !== undefined) {
+        return cmds[cmdName](args);
+    }
 }
 
 /* Socket behavior. */
@@ -30,6 +32,7 @@ io.sockets.on('connection', function(socket) {
         socket.username = options.username;
         socket.id = numUsers.toString();
         socket.color = options.color;
+        clients[socket.id] = {socket: socket, isTyping: false}
         io.emit('is_online', msgtools.formatJoinMessage(socket));
     });
 
@@ -88,19 +91,19 @@ io.sockets.on('connection', function(socket) {
         var args = message.split(" ");
         // Check for empty command.
         if(args[0] !== '/') {
-            var ret = cmdParser(args);
-            io.emit('chat_message', msgtools.formatMessage(socket, ret));
+            var ret = '<div class="col s12">' + cmdParser(args) + '</div>';
+            io.emit('chat_message', ret);
         }
     });
 
     socket.on('user_typing', function() {
-        isTyping.set(socket, true);
-        var msg = msgtools.generateTypingMessage(isTyping);
+        clients[socket.id].isTyping = true;
+        var msg = msgtools.generateTypingMessage(clients);
         io.emit('send_notify', msg);
     });
 
     socket.on('user_not_typing', function() {
-        isTyping.set(socket, false);
+        clients[socket.id].isTyping = false;
     });
 
     socket.on('request_info', function(options) {
